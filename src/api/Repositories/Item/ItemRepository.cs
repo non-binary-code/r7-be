@@ -36,13 +36,6 @@ namespace r7.Repositories
             var sql = AddItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, item);
 
-            var linksql = AddUserItemLinkSqlStatement();
-            await _query.ExecuteAsync(linksql, new
-            {
-                item.UserId,
-                ItemId = id
-            });
-
             return await GetItemByItemId(id);
         }
 
@@ -54,13 +47,13 @@ namespace r7.Repositories
 
         private static string GetAllItemsSqlStatement()
         {
-            return $@"SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location FROM items";
+            return $@"SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId FROM items";
         }
 
         private static string GetItemByIdSqlStatement()
         {
             return $@"
-            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location FROM items
+            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId FROM items
             WHERE id = @ItemId";
         }
 
@@ -68,24 +61,12 @@ namespace r7.Repositories
         {
             return $@"INSERT INTO items
                  (
-                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location
+                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId
                  )
                  VALUES
                  (
-                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location
+                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId
                  ) RETURNING Id";
-        }
-
-        private static string AddUserItemLinkSqlStatement()
-        {
-            return $@"INSERT INTO useritems
-                 (
-                   UserId, ItemId
-                 )
-                 VALUES
-                 (
-                   @UserId, @ItemId
-                 )";
         }
 
         private static string EditItemSqlStatement()
@@ -101,7 +82,8 @@ namespace r7.Repositories
                     Postage = @Postage,
                     Recover = @Recover,
                     PictureUrl = @PictureUrl,
-                    Location = @Location
+                    Location = @Location,
+                    CurrentUserId = @CurrentUserId
                     WHERE Id = @Id";
         }
     }

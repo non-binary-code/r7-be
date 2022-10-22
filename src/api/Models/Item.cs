@@ -1,6 +1,4 @@
-﻿using Serilog.Sinks.Http.Private.Network;
-
-namespace r7.Models;
+﻿namespace r7.Models;
 
 public class Item
 {
@@ -15,4 +13,5 @@ public class Item
     public bool Recover { get; set; }
     public string PictureUrl { get; set; }
     public string Location { get; set; }
+    public long CurrentUserId { get; set; }
 }
