@@ -55,14 +55,13 @@ namespace r7
         [HttpPost]
         [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> AddUser([FromBody] User user)
+        public async Task<ActionResult> AddUser([FromBody] NewUserRequest user)
         {
             try
             {
-                var id = await _userService.AddUser(user);
-                user.Id = id;
+                var newUser = await _userService.AddUser(user);
 
-                return Created($"{id}", user);
+                return Created($"{newUser.Id}", newUser);
             }
             catch (Exception e)
             {

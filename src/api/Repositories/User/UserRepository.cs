@@ -31,12 +31,12 @@ namespace r7.Repositories
             return user;
         }
 
-        public async Task<long> AddUser(User user)
+        public async Task<User> AddUser(NewUserRequest user)
         {
             var sql = AddUserSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, user);
 
-            return id;
+            return await GetUserByUserId(id);
         }
 
         public async Task EditUser(User user)
@@ -47,14 +47,13 @@ namespace r7.Repositories
 
         private static string GetAllUsersSqlStatement()
         {
-            return $@"SELECT Id, Username, Email, Bio, PictureUrl FROM Users";
+            return $@"SELECT Id, Username, Email, Bio, PictureUrl FROM users";
         }
 
         private static string GetUserSqlStatement()
         {
             return $@"
-            SELECT id, username, email, pictureurl, bio
-            FROM users 
+            SELECT Id, Username, Email, Bio, PictureUrl FROM users
             WHERE id = @UserId";
         }
 

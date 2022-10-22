@@ -22,15 +22,14 @@ namespace r7.Services
             return await _userRepository.GetUserByUserId(userId);
         }
 
-        public async Task<long> AddUser(User user)
+        public async Task<User> AddUser(NewUserRequest user)
         {
-            return 1;
-            //return await _userRepository.AddUser(user);
+            return await _userRepository.AddUser(user);
         }
 
         public async Task EditUser(User user)
         {
-            //await _userRepository.EditUser(user);
+            await _userRepository.EditUser(user);
         }
     }
 }
