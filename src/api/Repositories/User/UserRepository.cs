@@ -53,9 +53,9 @@ namespace r7.Repositories
         private static string GetUserSqlStatement()
         {
             return $@"
-            SELECT Id, Username, Email, Bio, PictureUrl
-            FROM Users 
-            WHERE Id = @UserId";
+            SELECT id, username, email, pictureurl, bio
+            FROM users 
+            WHERE id = @UserId";
         }
 
         private static string AddUserSqlStatement()
