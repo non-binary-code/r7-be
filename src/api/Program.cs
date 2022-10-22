@@ -1,5 +1,7 @@
 using System.Net;
 using Microsoft.OpenApi.Models;
+using r7.Services;
+using r7.Repositories;
 using Serilog;
 using Serilog.Events;
 
@@ -44,8 +46,14 @@ try
     // Add AWS Services here
 
     // Add Dependencies, ideally via modules to avoid this file becoming too large
+    builder.Services.AddScoped<IUserService, UserService>();
 
     // Repo
+    builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+    builder.Services.AddScoped<IQuery, DapperQuery>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
 
     // Build the app
     var app = builder.Build();
