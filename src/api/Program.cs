@@ -47,13 +47,14 @@ try
 
     // Add Dependencies, ideally via modules to avoid this file becoming too large
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IItemService, ItemService>();
 
     // Repo
     builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
     builder.Services.AddScoped<IQuery, DapperQuery>();
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
     // Build the app
     var app = builder.Build();
