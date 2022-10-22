@@ -36,6 +36,13 @@ namespace r7.Repositories
             var sql = AddItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, item);
 
+            var linksql = AddUserItemLinkSqlStatement();
+            await _query.ExecuteAsync(linksql, new
+            {
+                item.UserId,
+                ItemId = id
+            });
+
             return await GetItemByItemId(id);
         }
 
@@ -67,6 +74,18 @@ namespace r7.Repositories
                  (
                    @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location
                  ) RETURNING Id";
+        }
+
+        private static string AddUserItemLinkSqlStatement()
+        {
+            return $@"INSERT INTO useritems
+                 (
+                   UserId, ItemId
+                 )
+                 VALUES
+                 (
+                   @UserId, @ItemId
+                 )";
         }
 
         private static string EditItemSqlStatement()

@@ -71,7 +71,10 @@ namespace r7.Repositories
         private static string GetItemsByUserIdSqlStatement()
         {
             return $@"
-            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location FROM items";
+            SELECT i.Id, i.Name, i.Description, i.CategoryTypeId, i.ConditionTypeId, i.Delivery, i.Collection, i.Postage, i.Recover, i.PictureUrl, i.Location FROM items i
+            LEFT JOIN useritems ui ON i.id = ui.itemid
+            LEFT JOIN users u ON u.id = ui.userid
+            WHERE u.id = @UserId";
         }
 
         private static string AddUserSqlStatement()
