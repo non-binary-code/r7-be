@@ -51,7 +51,26 @@ namespace r7
                 return BadRequest(e);
             }
         }
-        
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Item>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Route("{userId}/items")]
+        public async Task<ActionResult> GetItemsByUserId(long userId)
+        {
+            try
+            {
+                var returnedItems = await _userService.GetItemsByUserId(userId);
+                return Ok(returnedItems);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]

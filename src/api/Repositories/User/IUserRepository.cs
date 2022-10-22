@@ -6,6 +6,7 @@ namespace r7.Repositories
     {
         Task<IEnumerable<User>> GetUsers();
         Task<User> GetUserByUserId(long userId);
+        Task<IEnumerable<Item>> GetItemsByUserId(long userId); 
         Task<User> AddUser(NewUserRequest user);
         Task EditUser(User user);
     }

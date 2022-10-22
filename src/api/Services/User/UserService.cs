@@ -22,6 +22,11 @@ namespace r7.Services
             return await _userRepository.GetUserByUserId(userId);
         }
 
+        public async Task<IEnumerable<Item>> GetItemsByUserId(long userId)
+        {
+            return await _userRepository.GetItemsByUserId(userId);
+        }
+
         public async Task<User> AddUser(NewUserRequest user)
         {
             return await _userRepository.AddUser(user);

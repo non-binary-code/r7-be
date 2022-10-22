@@ -31,6 +31,17 @@ namespace r7.Repositories
             return user;
         }
 
+        public async Task<IEnumerable<Item>> GetItemsByUserId(long userId)
+        {
+            var sql = GetItemsByUserIdSqlStatement();
+            var items = await _query.QueryAsync<Item>(sql, new
+            {
+                UserId = userId
+            });
+
+            return items;
+        }
+
         public async Task<User> AddUser(NewUserRequest user)
         {
             var sql = AddUserSqlStatement();
@@ -55,6 +66,12 @@ namespace r7.Repositories
             return $@"
             SELECT Id, Username, Email, Bio, PictureUrl FROM users
             WHERE id = @UserId";
+        }
+
+        private static string GetItemsByUserIdSqlStatement()
+        {
+            return $@"
+            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location FROM items";
         }
 
         private static string AddUserSqlStatement()
