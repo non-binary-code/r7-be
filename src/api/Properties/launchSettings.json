@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:13830",
+      "sslPort": 44319
+    }
+  },
+  "profiles": {
+    "LocalProject-Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger/index.html",
+      "applicationUrl": "http://localhost:8080",
+      "environmentVariables": {
+        "Port": "8080",
+        "DATABASE_URL": "postgres://eweernkbsdeplo:1599c8131b35cff4c0f794946052e820952ed2eed363ce607f82967adfc3902a@ec2-54-170-90-26.eu-west-1.compute.amazonaws.com:5432/d5queedhrvnuos"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}
