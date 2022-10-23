@@ -58,32 +58,28 @@ namespace r7.Repositories
 
         private static string GetAllUsersSqlStatement()
         {
-            return $@"SELECT Id, Username, Email, Bio, PictureUrl FROM users";
+            return $@"SELECT * FROM users";
         }
 
         private static string GetUserSqlStatement()
         {
-            return $@"
-            SELECT Id, Username, Email, Bio, PictureUrl FROM users
-            WHERE id = @UserId";
+            return $@"SELECT * FROM users WHERE id = @UserId";
         }
 
         private static string GetItemsByUserIdSqlStatement()
         {
-            return $@"
-            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId FROM items
-            WHERE CurrentUserId = @UserId";
+            return $@"SELECT * FROM items WHERE CurrentUserId = @UserId";
         }
 
         private static string AddUserSqlStatement()
         {
             return $@"INSERT INTO Users
                  (
-                   Username, Email, Bio, PictureUrl
+                   Username, Email, Bio, PictureUrl, Location, WillRecover, AllowBookings, Availability, DistanceWillTravel
                  )
                  VALUES
                  (
-                   @Username, @Email, @Bio, @PictureUrl
+                   @Username, @Email, @Bio, @PictureUrl, @Location, @WillRecover, @AllowBookings, @Availability, @DistanceWillTravel
                  ) RETURNING Id";
         }
 
@@ -94,7 +90,12 @@ namespace r7.Repositories
                     Username = @Username,
                     Email = @Email,
                     Bio = @Bio,
-                    PictureUrl = @PictureUrl
+                    PictureUrl = @PictureUrl,
+                    Location = @Location,
+                    WillRecover = @WillRecover,
+                    AllowBookings = @AllowBookings,
+                    Availability = @Availability,
+                    DistanceWillTravel = @DistanceWillTravel
                     WHERE Id = @Id";
         }
     }
