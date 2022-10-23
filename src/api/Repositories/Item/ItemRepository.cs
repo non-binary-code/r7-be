@@ -16,12 +16,7 @@ namespace r7.Repositories
         public async Task<IEnumerable<ReuseItem?>> GetItems(ReuseQueryParameters queryParameters)
         {
             var sqlStatement = GetAllItemsSqlStatement();
-
-            if (HasQuery(queryParameters))
-            {
-                var additionalSql = QueryToSql(queryParameters);
-                sqlStatement += additionalSql;
-            }
+            sqlStatement += QueryToSql(queryParameters);
 
             var items = await _query.QueryAsync<Item>(sqlStatement);
 
@@ -49,17 +44,6 @@ namespace r7.Repositories
                 Postage = arg.Postage,
                 Recover = arg.Recover
             };
-        }
-
-        private static bool HasQuery(ReuseQueryParameters queryParameters)
-        {
-            return (queryParameters.CategoryTypeId.HasValue ||
-                    queryParameters.ConditionTypeId.HasValue ||
-                    queryParameters.Delivery ||
-                    queryParameters.Collection ||
-                    queryParameters.Postage ||
-                    queryParameters.Recover ||
-                    !queryParameters.IncludeArchived);
         }
 
         private static string QueryToSql(ReuseQueryParameters queryParameters)
@@ -109,11 +93,7 @@ namespace r7.Repositories
         public async Task<IEnumerable<RecycleItem?>> GetItems(RecycleQueryParameters queryParameters)
         {
             var sqlStatement = GetAllItemsSqlStatement();
-            if (HasQuery(queryParameters))
-            {
-                var additionalSql = QueryToSql(queryParameters);
-                sqlStatement += additionalSql;
-            }
+           sqlStatement += QueryToSql(queryParameters);
 
             var items = await _query.QueryAsync<Item>(sqlStatement);
 
@@ -142,12 +122,6 @@ namespace r7.Repositories
             };
         }
 
-        private static bool HasQuery(RecycleQueryParameters queryParameters)
-        {
-            return (queryParameters.Compostable ||
-                    !queryParameters.IncludeArchived);
-        }
-
         private static string QueryToSql(RecycleQueryParameters queryParameters)
         {
             var additionSql = new StringBuilder(" WHERE ItemTypeId = 2");
@@ -157,9 +131,10 @@ namespace r7.Repositories
                 additionSql.Append($" AND Archived IS FALSE");
             }
 
-            if (queryParameters.Compostable)
+            if (queryParameters.Compostable.HasValue)
             {
-                additionSql.Append($" AND Compostable IS TRUE");
+                var compostable = queryParameters.Compostable.Value ? "TRUE" : "FALSE";
+                additionSql.Append($" AND Compostable IS {compostable}");
             }
 
             additionSql.Append(" order by ID DESC");
@@ -170,11 +145,7 @@ namespace r7.Repositories
         public async Task<IEnumerable<RepairItem?>> GetItems(RepairQueryParameters queryParameters)
         {
             var sqlStatement = GetAllItemsSqlStatement();
-            if (HasQuery(queryParameters))
-            {
-                var additionalSql = QueryToSql(queryParameters);
-                sqlStatement += additionalSql;
-            }
+            sqlStatement += QueryToSql(queryParameters);
 
             var items = await _query.QueryAsync<Item>(sqlStatement);
 
@@ -196,11 +167,6 @@ namespace r7.Repositories
                 Archived = arg.Archived,
                 ArchivedReason = arg.ArchivedReason
             };
-        }
-
-        private static bool HasQuery(RepairQueryParameters queryParameters)
-        {
-            return (!queryParameters.IncludeArchived);
         }
 
         private static string QueryToSql(RepairQueryParameters queryParameters)

@@ -197,7 +197,7 @@ namespace r7
 
     public class RecycleQueryParameters
     {
-        public bool Compostable { get; set; }
+        public bool? Compostable { get; set; }
         public bool IncludeArchived { get; set; }
     }
 
