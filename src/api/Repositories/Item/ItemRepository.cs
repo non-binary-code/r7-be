@@ -218,15 +218,6 @@ namespace r7.Repositories
                     PictureUrl = @PictureUrl,
                     Location = @Location
                     WHERE Id = @Id";
-
-            //CategoryTypeId = @CategoryTypeId,
-            //ConditionTypeId = @ConditionTypeId,
-            //Delivery = @Delivery,
-            //Collection = @Collection,
-            //Postage = @Postage,
-            //Recover = @Recover,
-            //PictureUrl = @PictureUrl,
-            //Location = @Location,
         }
 
         private static string ArchiveSqlStatement()
