@@ -203,6 +203,10 @@ namespace r7
 
     public class RepairQueryParameters
     {
+        public bool Delivery { get; set; }
+        public bool Collection { get; set; }
+        public bool Postage { get; set; }
+        public bool Recover { get; set; }
         public bool IncludeArchived { get; set; }
     }
 }

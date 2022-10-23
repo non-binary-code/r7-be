@@ -13,4 +13,9 @@ public class RepairItem
 
     public bool Archived { get; set; }
     public string ArchivedReason { get; set; }
+
+    public bool Delivery { get; set; }
+    public bool Collection { get; set; }
+    public bool Postage { get; set; }
+    public bool Recover { get; set; }
 }

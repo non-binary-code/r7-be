@@ -18,6 +18,8 @@ public class Item
     // Reuse
     public long CategoryTypeId { get; set; }
     public long ConditionTypeId { get; set; }
+
+    // Repair and Reuse
     public bool Delivery { get; set; }
     public bool Collection { get; set; }
     public bool Postage { get; set; }

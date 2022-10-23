@@ -165,7 +165,11 @@ namespace r7.Repositories
                 PictureUrl = arg.PictureUrl,
                 Location = arg.Location,
                 Archived = arg.Archived,
-                ArchivedReason = arg.ArchivedReason
+                ArchivedReason = arg.ArchivedReason,
+                Delivery = arg.Delivery,
+                Collection = arg.Collection,
+                Postage = arg.Postage,
+                Recover = arg.Recover
             };
         }
 
@@ -176,6 +180,26 @@ namespace r7.Repositories
             if (!queryParameters.IncludeArchived)
             {
                 additionSql.Append($" AND Archived IS FALSE");
+            }
+
+            if (queryParameters.Delivery)
+            {
+                additionSql.Append($" AND Delivery IS TRUE");
+            }
+
+            if (queryParameters.Collection)
+            {
+                additionSql.Append($" AND Collection IS TRUE");
+            }
+
+            if (queryParameters.Postage)
+            {
+                additionSql.Append($" AND Postage IS TRUE");
+            }
+
+            if (queryParameters.Recover)
+            {
+                additionSql.Append($" AND Recover IS TRUE");
             }
 
             additionSql.Append(" order by ID DESC");
@@ -244,7 +268,11 @@ namespace r7.Repositories
                 item.UserId,
                 item.Description,
                 item.PictureUrl,
-                item.Location
+                item.Location,
+                item.Delivery,
+                item.Collection,
+                item.Postage,
+                item.Recover
             });
 
             return ConvertToRepair(await GetItemByItemId(id));
@@ -373,6 +401,10 @@ namespace r7.Repositories
                     Location,
                     CategoryTypeId,
                     ConditionTypeId,
+                    Delivery,
+                    Collection,
+                    Postage,
+                    Recover,
                     Archived,
                     ItemTypeId
                  )
@@ -385,6 +417,10 @@ namespace r7.Repositories
                     @Location,
                     1,
                     1,
+                    @Delivery,
+                    @Collection,
+                    @Postage,
+                    @Recover,
                     False,
                     3
                  ) RETURNING Id";
