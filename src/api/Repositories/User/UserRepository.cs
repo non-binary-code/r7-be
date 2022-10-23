@@ -12,9 +12,13 @@ namespace r7.Repositories
             _query = query;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsers(UserQueryParameters queryParameters)
         {
             var sqlStatement = GetAllUsersSqlStatement();
+            var willRecover = queryParameters.Recover ? "TRUE" : "FALSE";
+
+            sqlStatement += $" WHERE WillRecover = {willRecover} ORDER BY ID DESC";
+
             var users = await _query.QueryAsync<User>(sqlStatement);
 
             return users;

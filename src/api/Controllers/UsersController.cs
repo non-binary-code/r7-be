@@ -20,11 +20,11 @@ namespace r7
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetUsers()
+        public async Task<ActionResult> GetUsers([FromQuery] UserQueryParameters queryParameters)
         {
             try
             {
-                var returnedUsers = await _userService.GetUsers();
+                var returnedUsers = await _userService.GetUsers(queryParameters);
                 return Ok(returnedUsers);
             }
             catch (Exception e)
@@ -105,5 +105,10 @@ namespace r7
                 return BadRequest(e);
             }
         }
+    }
+
+    public class UserQueryParameters
+    {
+        public bool Recover { get; set; }
     }
 }

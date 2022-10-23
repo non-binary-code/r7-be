@@ -12,9 +12,9 @@ namespace r7.Services
             _userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsers(UserQueryParameters queryParameters)
         {
-            return await _userRepository.GetUsers();
+            return await _userRepository.GetUsers(queryParameters);
         }
 
         public async Task<User> GetUserByUserId(long userId)
