@@ -6,4 +6,9 @@ public class NewUserRequest
     public string Email { get; set; }
     public string? Bio { get; set; }
     public string? PictureUrl { get; set; }
+    public string? Location { get; set; }
+    public bool WillRecover { get; set; }
+    public bool AllowBookings { get; set; }
+    public string? Availability { get; set; }
+    public decimal? DistanceWillTravel { get; set; }
 }
