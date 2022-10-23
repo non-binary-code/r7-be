@@ -12,9 +12,9 @@ namespace r7.Services
             _itemRepository = itemRepository;
         }
 
-        public async Task<IEnumerable<Item>> GetItems()
+        public async Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters)
         {
-            return await _itemRepository.GetItems();
+            return await _itemRepository.GetItems(queryParameters);
         }
 
         public async Task<Item> GetItemByItemId(long itemId)

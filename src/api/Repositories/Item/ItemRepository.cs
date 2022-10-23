@@ -1,3 +1,4 @@
+using System.Text;
 using r7.Models;
 using Serilog;
 
@@ -12,12 +13,98 @@ namespace r7.Repositories
             _query = query;
         }
 
-        public async Task<IEnumerable<Item>> GetItems()
+        public async Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters)
         {
             var sqlStatement = GetAllItemsSqlStatement();
+            if (HasQuery(queryParameters))
+            {
+                var additionalSql = QueryToSql(queryParameters);
+                sqlStatement += additionalSql;
+            }
+
             var items = await _query.QueryAsync<Item>(sqlStatement);
 
             return items;
+        }
+
+        private string QueryToSql(QueryParameters queryParameters)
+        {
+            var additionSql = new StringBuilder(" WHERE ");
+            var foundQueryParam = false;
+
+            if (queryParameters.CategoryTypeId.HasValue)
+            {
+                foundQueryParam = true;
+                additionSql.Append($"CategoryTypeId = {queryParameters.CategoryTypeId}");
+            }
+
+            if (queryParameters.ConditionTypeId.HasValue)
+            {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
+                foundQueryParam = true;
+                additionSql.Append($"ConditionTypeId = {queryParameters.ConditionTypeId}");
+            }
+
+            if (queryParameters.Delivery)
+            {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
+                foundQueryParam = true;
+                additionSql.Append($"Delivery IS TRUE");
+            }
+
+            if (queryParameters.Collection)
+            {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
+                foundQueryParam = true;
+                additionSql.Append($"Collection IS TRUE");
+            }
+
+            if (queryParameters.Postage)
+            {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
+                foundQueryParam = true;
+                additionSql.Append($"Postage IS TRUE");
+            }
+
+            if (queryParameters.Recover)
+            {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
+                foundQueryParam = true;
+                additionSql.Append($"Recover IS TRUE");
+            }
+            
+            return additionSql.ToString();
+        }
+
+
+        private static bool HasQuery(QueryParameters queryParameters)
+        {
+            return (queryParameters.CategoryTypeId.HasValue ||
+                    queryParameters.ConditionTypeId.HasValue ||
+                    queryParameters.Delivery ||
+                    queryParameters.Collection ||
+                    queryParameters.Postage ||
+                    queryParameters.Recover);
         }
 
         public async Task<Item> GetItemByItemId(long itemId)

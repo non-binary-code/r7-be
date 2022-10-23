@@ -20,11 +20,11 @@ namespace r7
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Item>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetItems()
+        public async Task<ActionResult> GetItems([FromQuery] QueryParameters queryParameters)
         {
             try
             {
-                var returnedItems = await _itemService.GetItems();
+                var returnedItems = await _itemService.GetItems(queryParameters);
                 return Ok(returnedItems);
             }
             catch (Exception e)
@@ -86,5 +86,15 @@ namespace r7
                 return BadRequest(e);
             }
         }
+    }
+
+    public class QueryParameters
+    {
+        public int? CategoryTypeId { get; set; }
+        public int? ConditionTypeId { get; set; }
+        public bool Delivery { get; set; }
+        public bool Collection { get; set; }
+        public bool Postage { get; set; }
+        public bool Recover { get; set; }
     }
 }

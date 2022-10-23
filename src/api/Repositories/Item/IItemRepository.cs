@@ -4,7 +4,7 @@ namespace r7.Repositories
 {
     public interface IItemRepository
     {
-        Task<IEnumerable<Item>> GetItems();
+        Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters);
         Task<Item> GetItemByItemId(long itemId);
         Task<Item> AddItem(NewItemRequest item);
         Task EditItem(Item item);
