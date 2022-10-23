@@ -6,7 +6,9 @@ public interface IItemService
 {
     Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters);
     Task<Item?> GetItemByItemId(long itemId);
-    Task<Item?> AddItem(NewItemRequest newItem);
+    Task<Item?> AddItem(NewReuseItemRequest newItem);
+    Task<Item?> AddItem(NewRecycleItemRequest newItem);
+    Task<Item?> AddItem(NewRepairItemRequest newItem);
     Task<bool> EditItem(long itemId, EditItemRequest editItemRequest);
     Task<bool> ArchiveItem(long itemId, ArchiveItemRequest archiveItemRequest);
 }

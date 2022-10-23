@@ -3,7 +3,7 @@ using DataAnnotationsExtensions;
 
 namespace r7.Models;
 
-public class NewItemRequest
+public class NewRepairItemRequest
 {
     public string Name { get; set; }
     public string? Description { get; set; }

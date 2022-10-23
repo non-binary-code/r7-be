@@ -55,7 +55,46 @@ namespace r7
         [HttpPost]
         [ProducesResponseType(typeof(Item), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> AddItem([FromBody] NewItemRequest item)
+        [Route("reuse")]
+        public async Task<ActionResult> AddItem([FromBody] NewReuseItemRequest item)
+        {
+            try
+            {
+                var newItem = await _itemService.AddItem(item);
+
+                return Created($"{newItem.Id}", newItem);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(Item), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Route("recycle")]
+        public async Task<ActionResult> AddItem([FromBody] NewRecycleItemRequest item)
+        {
+            try
+            {
+                var newItem = await _itemService.AddItem(item);
+
+                return Created($"{newItem.Id}", newItem);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(Item), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Route("repair")]
+        public async Task<ActionResult> AddItem([FromBody] NewRepairItemRequest item)
         {
             try
             {

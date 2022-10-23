@@ -6,7 +6,9 @@ namespace r7.Repositories
     {
         Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters);
         Task<Item?> GetItemByItemId(long itemId);
-        Task<Item?> AddItem(NewItemRequest item);
+        Task<Item?> AddItem(NewReuseItemRequest item);
+        Task<Item?> AddItem(NewRecycleItemRequest item);
+        Task<Item?> AddItem(NewRepairItemRequest item);
         Task EditItem(long itemId, EditItemRequest editItemRequest);
         Task ArchiveItem(long itemId, ArchiveItemRequest archiveItemRequest);
     }

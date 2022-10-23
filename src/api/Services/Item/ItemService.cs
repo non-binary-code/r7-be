@@ -22,11 +22,21 @@ namespace r7.Services
             return await _itemRepository.GetItemByItemId(itemId);
         }
 
-        public async Task<Item?> AddItem(NewItemRequest item)
+        public async Task<Item?> AddItem(NewReuseItemRequest item)
         {
             return await _itemRepository.AddItem(item);
         }
 
+        public async Task<Item?> AddItem(NewRecycleItemRequest item)
+        {
+            return await _itemRepository.AddItem(item);
+        }
+
+        public async Task<Item?> AddItem(NewRepairItemRequest item)
+        {
+            return await _itemRepository.AddItem(item);
+        }
+        
         public async Task<bool> EditItem(long itemId, EditItemRequest editItemRequest)
         {
             var item = await _itemRepository.GetItemByItemId(itemId);

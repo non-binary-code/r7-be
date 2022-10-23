@@ -129,7 +129,7 @@ namespace r7.Repositories
             return item;
         }
 
-        public async Task<Item?> AddItem(NewItemRequest item)
+        public async Task<Item?> AddItem(NewReuseItemRequest item)
         {
             var sql = AddItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, new
@@ -152,6 +152,50 @@ namespace r7.Repositories
             return await GetItemByItemId(id);
         }
 
+        public async Task<Item?> AddItem(NewRecycleItemRequest item)
+        {
+            var sql = AddRecycleItemSqlStatement();
+            var id = await _query.ExecuteScalarAsync<long>(sql, new
+            {
+                item.Name,
+                item.Description,
+                item.PictureUrl,
+                item.Location,
+                item.RecycleLocation,
+                item.Distance,
+                item.Weight,
+                item.Dimensions,
+                item.Compostable,
+                item.UserId,
+                Archived = false
+            });
+
+            return await GetItemByItemId(id);
+        }
+
+        public async Task<Item?> AddItem(NewRepairItemRequest item)
+        {
+            var sql = AddItemSqlStatement();
+            var id = await _query.ExecuteScalarAsync<long>(sql, new
+            {
+                item.Name,
+                item.Description,
+                item.CategoryTypeId,
+                item.ConditionTypeId,
+                item.Delivery,
+                item.Collection,
+                item.Postage,
+                item.Recover,
+                item.Location,
+                item.PictureUrl,
+                item.UserId,
+                Archived = false,
+                ItemTypeId = 3
+            });
+
+            return await GetItemByItemId(id);
+        }
+        
         public async Task EditItem(long itemId, EditItemRequest editItemRequest)
         {
             var sql = EditItemSqlStatement();
@@ -201,6 +245,44 @@ namespace r7.Repositories
                  VALUES
                  (
                    @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId, @Archived, @ItemTypeId
+                 ) RETURNING Id";
+        }
+
+        private static string AddRecycleItemSqlStatement()
+        {
+            return $@"INSERT INTO items
+                 (
+                    Name,
+                    Description,
+                    CategoryTypeId,
+                    ConditionTypeId,
+                    PictureUrl,
+                    Location,
+                    CurrentUserId,
+                    Archived,
+                    ItemTypeId,
+                    RecycleLocation,
+                    Distance,
+                    Weight,
+                    Dimensions,
+                    Compostable
+                 )
+                 VALUES
+                 (
+                    @Name,
+                    @Description,
+                    1,
+                    1,
+                    @PictureUrl,
+                    @Location,
+                    @UserId,
+                    @Archived,
+                    2,
+                    @RecycleLocation,
+                    @Distance,
+                    @Weight,
+                    @Dimensions,
+                    @Compostable
                  ) RETURNING Id";
         }
 
