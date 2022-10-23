@@ -11,4 +11,9 @@ public class NewRepairItemRequest
     public string? Description { get; set; }
     public string? PictureUrl { get; set; }
     public string? Location { get; set; }
+
+    public bool Delivery { get; set; }
+    public bool Collection { get; set; }
+    public bool Postage { get; set; }
+    public bool Recover { get; set; }
 }
