@@ -203,6 +203,8 @@ namespace r7
 
     public class RepairQueryParameters
     {
+        public int? CategoryTypeId { get; set; }
+        public int? ConditionTypeId { get; set; }
         public bool Delivery { get; set; }
         public bool Collection { get; set; }
         public bool Postage { get; set; }

@@ -166,6 +166,8 @@ namespace r7.Repositories
                 Location = arg.Location,
                 Archived = arg.Archived,
                 ArchivedReason = arg.ArchivedReason,
+                CategoryTypeId = arg.CategoryTypeId,
+                ConditionTypeId = arg.ConditionTypeId,
                 Delivery = arg.Delivery,
                 Collection = arg.Collection,
                 Postage = arg.Postage,
@@ -180,6 +182,16 @@ namespace r7.Repositories
             if (!queryParameters.IncludeArchived)
             {
                 additionSql.Append($" AND Archived IS FALSE");
+            }
+
+            if (queryParameters.CategoryTypeId.HasValue)
+            {
+                additionSql.Append($" AND CategoryTypeId = {queryParameters.CategoryTypeId}");
+            }
+
+            if (queryParameters.ConditionTypeId.HasValue)
+            {
+                additionSql.Append($" AND ConditionTypeId = {queryParameters.ConditionTypeId}");
             }
 
             if (queryParameters.Delivery)
@@ -269,6 +281,8 @@ namespace r7.Repositories
                 item.Description,
                 item.PictureUrl,
                 item.Location,
+                item.CategoryTypeId,
+                item.ConditionTypeId,
                 item.Delivery,
                 item.Collection,
                 item.Postage,
@@ -415,8 +429,8 @@ namespace r7.Repositories
                     @Description,
                     @PictureUrl,
                     @Location,
-                    1,
-                    1,
+                    @CategoryTypeId,
+                    @ConditionTypeId,
                     @Delivery,
                     @Collection,
                     @Postage,

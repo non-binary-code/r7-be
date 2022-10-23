@@ -11,6 +11,10 @@ public class NewRepairItemRequest
     public string? Description { get; set; }
     public string? PictureUrl { get; set; }
     public string? Location { get; set; }
+    [Required, Range(1, 3)]
+    public long CategoryTypeId { get; set; }
+    [Required, Range(1, 6)]
+    public long ConditionTypeId { get; set; }
 
     public bool Delivery { get; set; }
     public bool Collection { get; set; }
