@@ -73,17 +73,37 @@ namespace r7
         [HttpPut]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> EditItem([FromBody] Item item)
+        [Route("{itemId}")]
+        public async Task<ActionResult> EditItem(long itemId, [FromBody] EditItemRequest editItemRequest)
         {
             try
             {
-                await _itemService.EditItem(item);
+                await _itemService.EditItem(itemId, editItemRequest);
                 return Ok();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return BadRequest(e);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        [Route("{itemId}/archive")]
+        public async Task<ActionResult> ArchiveItem(long itemId, [FromBody] ArchiveItemRequest archiveItemRequest)
+        {
+            try
+            {
+                var found = await _itemService.ArchiveItem(itemId, archiveItemRequest);
+                return found ? Ok() : NotFound();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e);
             }
         }
     }
@@ -96,5 +116,6 @@ namespace r7
         public bool Collection { get; set; }
         public bool Postage { get; set; }
         public bool Recover { get; set; }
+        public bool IncludeArchived { get; set; }
     }
 }

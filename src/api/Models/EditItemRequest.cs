@@ -1,8 +1,7 @@
-﻿namespace r7.Models;
+namespace r7.Models;
 
-public class Item
+public class EditItemRequest
 {
-    public long Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public long CategoryTypeId { get; set; }
@@ -13,7 +12,4 @@ public class Item
     public bool Recover { get; set; }
     public string PictureUrl { get; set; }
     public string Location { get; set; }
-    public long CurrentUserId { get; set; }
-    public bool Archived { get; set; }
-    public string ArchivedReason { get; set; }
 }

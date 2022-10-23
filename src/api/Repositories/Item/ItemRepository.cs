@@ -27,13 +27,24 @@ namespace r7.Repositories
             return items;
         }
 
-        private string QueryToSql(QueryParameters queryParameters)
+        private static string QueryToSql(QueryParameters queryParameters)
         {
             var additionSql = new StringBuilder(" WHERE ");
             var foundQueryParam = false;
 
+            if (!queryParameters.IncludeArchived)
+            {
+                foundQueryParam = true;
+                additionSql.Append($"Archived IS FALSE");
+            }
+
             if (queryParameters.CategoryTypeId.HasValue)
             {
+                if (foundQueryParam)
+                {
+                    additionSql.Append(" AND ");
+                }
+
                 foundQueryParam = true;
                 additionSql.Append($"CategoryTypeId = {queryParameters.CategoryTypeId}");
             }
@@ -96,7 +107,6 @@ namespace r7.Repositories
             return additionSql.ToString();
         }
 
-
         private static bool HasQuery(QueryParameters queryParameters)
         {
             return (queryParameters.CategoryTypeId.HasValue ||
@@ -104,10 +114,11 @@ namespace r7.Repositories
                     queryParameters.Delivery ||
                     queryParameters.Collection ||
                     queryParameters.Postage ||
-                    queryParameters.Recover);
+                    queryParameters.Recover || 
+                    !queryParameters.IncludeArchived);
         }
 
-        public async Task<Item> GetItemByItemId(long itemId)
+        public async Task<Item?> GetItemByItemId(long itemId)
         {
             var sql = GetItemByIdSqlStatement();
             var item = await _query.QueryFirstOrDefaultAsync<Item>(sql, new
@@ -118,29 +129,65 @@ namespace r7.Repositories
             return item;
         }
 
-        public async Task<Item> AddItem(NewItemRequest item)
+        public async Task<Item?> AddItem(NewItemRequest item)
         {
             var sql = AddItemSqlStatement();
-            var id = await _query.ExecuteScalarAsync<long>(sql, item);
+            var id = await _query.ExecuteScalarAsync<long>(sql, new
+            {
+                item.Name,
+                item.Description,
+                item.CategoryTypeId,
+                item.ConditionTypeId,
+                item.Delivery,
+                item.Collection,
+                item.Postage,
+                item.Recover,
+                item.Location,
+                item.PictureUrl,
+                item.UserId,
+                Archived = false
+            });
 
             return await GetItemByItemId(id);
         }
 
-        public async Task EditItem(Item item)
+        public async Task EditItem(long itemId, EditItemRequest editItemRequest)
         {
             var sql = EditItemSqlStatement();
-            await _query.ExecuteAsync(sql, item);
+            var parameters = new
+            {
+                Id = itemId,
+                editItemRequest.Name,
+                editItemRequest.Description,
+                editItemRequest.CategoryTypeId,
+                editItemRequest.ConditionTypeId,
+                editItemRequest.Delivery,
+                editItemRequest.Collection,
+                editItemRequest.Postage,
+                editItemRequest.Recover,
+                editItemRequest.PictureUrl,
+                editItemRequest.Location
+            };
+
+            await _query.ExecuteAsync(sql, parameters);
+        }
+
+        public async Task ArchiveItem(long itemId, ArchiveItemRequest archiveItemRequest)
+        {
+            var sql = ArchiveSqlStatement();
+            var parameters = new {Id = itemId, Archived = true, archiveItemRequest.ArchivedReason};
+            await _query.ExecuteAsync(sql, parameters);
         }
 
         private static string GetAllItemsSqlStatement()
         {
-            return $@"SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId FROM items";
+            return $@"SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ArchivedReason FROM items";
         }
 
         private static string GetItemByIdSqlStatement()
         {
             return $@"
-            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId FROM items
+            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ArchivedReason FROM items
             WHERE id = @ItemId";
         }
 
@@ -148,11 +195,11 @@ namespace r7.Repositories
         {
             return $@"INSERT INTO items
                  (
-                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId
+                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived
                  )
                  VALUES
                  (
-                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId
+                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId, @Archived
                  ) RETURNING Id";
         }
 
@@ -169,8 +216,25 @@ namespace r7.Repositories
                     Postage = @Postage,
                     Recover = @Recover,
                     PictureUrl = @PictureUrl,
-                    Location = @Location,
-                    CurrentUserId = @CurrentUserId
+                    Location = @Location
+                    WHERE Id = @Id";
+
+            //CategoryTypeId = @CategoryTypeId,
+            //ConditionTypeId = @ConditionTypeId,
+            //Delivery = @Delivery,
+            //Collection = @Collection,
+            //Postage = @Postage,
+            //Recover = @Recover,
+            //PictureUrl = @PictureUrl,
+            //Location = @Location,
+        }
+
+        private static string ArchiveSqlStatement()
+        {
+            return $@"UPDATE items
+                    SET
+                    Archived = @Archived,
+                    ArchivedReason = @ArchivedReason
                     WHERE Id = @Id";
         }
     }

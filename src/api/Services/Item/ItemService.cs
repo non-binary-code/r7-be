@@ -17,19 +17,38 @@ namespace r7.Services
             return await _itemRepository.GetItems(queryParameters);
         }
 
-        public async Task<Item> GetItemByItemId(long itemId)
+        public async Task<Item?> GetItemByItemId(long itemId)
         {
             return await _itemRepository.GetItemByItemId(itemId);
         }
 
-        public async Task<Item> AddItem(NewItemRequest item)
+        public async Task<Item?> AddItem(NewItemRequest item)
         {
             return await _itemRepository.AddItem(item);
         }
 
-        public async Task EditItem(Item user)
+        public async Task<bool> EditItem(long itemId, EditItemRequest editItemRequest)
         {
-            await _itemRepository.EditItem(user);
+            var item = await _itemRepository.GetItemByItemId(itemId);
+            if (item == null)
+            {
+                return false;
+            }
+
+            await _itemRepository.EditItem(itemId, editItemRequest);
+            return true;
+        }
+
+        public async Task<bool> ArchiveItem(long itemId, ArchiveItemRequest archiveItemRequest)
+        {
+            var item = await _itemRepository.GetItemByItemId(itemId);
+            if (item == null)
+            {
+                return false;
+            }
+
+            await _itemRepository.ArchiveItem(itemId, archiveItemRequest);
+            return true;
         }
     }
 }
