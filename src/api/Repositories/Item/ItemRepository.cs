@@ -145,7 +145,8 @@ namespace r7.Repositories
                 item.Location,
                 item.PictureUrl,
                 item.UserId,
-                Archived = false
+                Archived = false,
+                ItemTypeId = 1
             });
 
             return await GetItemByItemId(id);
@@ -195,11 +196,11 @@ namespace r7.Repositories
         {
             return $@"INSERT INTO items
                  (
-                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived
+                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ItemTypeId
                  )
                  VALUES
                  (
-                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId, @Archived
+                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId, @Archived, @ItemTypeId
                  ) RETURNING Id";
         }
 

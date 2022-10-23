@@ -17,6 +17,6 @@ public class NewItemRequest
     public bool Recover { get; set; }
     public string? PictureUrl { get; set; }
     public string? Location { get; set; }
-    [Min(1), Max(100)]
+    [Min(1)]
     public long UserId { get; set; }
 }
