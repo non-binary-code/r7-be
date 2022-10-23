@@ -13,7 +13,100 @@ namespace r7.Repositories
             _query = query;
         }
 
-        public async Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters)
+        public async Task<IEnumerable<ReuseItem?>> GetItems(ReuseQueryParameters queryParameters)
+        {
+            var sqlStatement = GetAllItemsSqlStatement();
+
+            if (HasQuery(queryParameters))
+            {
+                var additionalSql = QueryToSql(queryParameters);
+                sqlStatement += additionalSql;
+            }
+
+            var items = await _query.QueryAsync<Item>(sqlStatement);
+
+            return items.Select(ConvertToReuse);
+        }
+
+        private static ReuseItem? ConvertToReuse(Item? arg)
+        {
+            if (arg == null) return null;
+
+            return new ReuseItem
+            {
+                Id = arg.Id,
+                CurrentUserId = arg.CurrentUserId,
+                Name = arg.Name,
+                Description = arg.Description,
+                PictureUrl = arg.PictureUrl,
+                Location = arg.Location,
+                Archived = arg.Archived,
+                ArchivedReason = arg.ArchivedReason,
+                CategoryTypeId = arg.CategoryTypeId,
+                ConditionTypeId = arg.ConditionTypeId,
+                Delivery = arg.Delivery,
+                Collection = arg.Collection,
+                Postage = arg.Postage,
+                Recover = arg.Recover
+            };
+        }
+
+        private static bool HasQuery(ReuseQueryParameters queryParameters)
+        {
+            return (queryParameters.CategoryTypeId.HasValue ||
+                    queryParameters.ConditionTypeId.HasValue ||
+                    queryParameters.Delivery ||
+                    queryParameters.Collection ||
+                    queryParameters.Postage ||
+                    queryParameters.Recover ||
+                    !queryParameters.IncludeArchived);
+        }
+
+        private static string QueryToSql(ReuseQueryParameters queryParameters)
+        {
+            var additionSql = new StringBuilder(" WHERE ItemTypeId = 1");
+
+            if (!queryParameters.IncludeArchived)
+            {
+                additionSql.Append($" AND Archived IS FALSE");
+            }
+
+            if (queryParameters.CategoryTypeId.HasValue)
+            {
+                additionSql.Append($" AND CategoryTypeId = {queryParameters.CategoryTypeId}");
+            }
+
+            if (queryParameters.ConditionTypeId.HasValue)
+            {
+                additionSql.Append($" AND ConditionTypeId = {queryParameters.ConditionTypeId}");
+            }
+
+            if (queryParameters.Delivery)
+            {
+                additionSql.Append($" AND Delivery IS TRUE");
+            }
+
+            if (queryParameters.Collection)
+            {
+                additionSql.Append($" AND Collection IS TRUE");
+            }
+
+            if (queryParameters.Postage)
+            {
+                additionSql.Append($" AND Postage IS TRUE");
+            }
+
+            if (queryParameters.Recover)
+            {
+                additionSql.Append($" AND Recover IS TRUE");
+            }
+
+            additionSql.Append(" order by ID DESC");
+
+            return additionSql.ToString();
+        }
+
+        public async Task<IEnumerable<RecycleItem?>> GetItems(RecycleQueryParameters queryParameters)
         {
             var sqlStatement = GetAllItemsSqlStatement();
             if (HasQuery(queryParameters))
@@ -24,98 +117,104 @@ namespace r7.Repositories
 
             var items = await _query.QueryAsync<Item>(sqlStatement);
 
-            return items;
+            return items.Select(ConvertToRecycle);
         }
 
-        private static string QueryToSql(QueryParameters queryParameters)
+        private static RecycleItem? ConvertToRecycle(Item? arg)
         {
-            var additionSql = new StringBuilder(" WHERE ");
-            var foundQueryParam = false;
+            if (arg == null) return null;
+
+            return new RecycleItem
+            {
+                Id = arg.Id,
+                CurrentUserId = arg.CurrentUserId,
+                Name = arg.Name,
+                Description = arg.Description,
+                PictureUrl = arg.PictureUrl,
+                Location = arg.Location,
+                Archived = arg.Archived,
+                ArchivedReason = arg.ArchivedReason,
+                Compostable = arg.Compostable,
+                Dimensions = arg.Dimensions,
+                Distance = arg.Distance,
+                RecycleLocation = arg.RecycleLocation,
+                Weight = arg.Weight
+            };
+        }
+
+        private static bool HasQuery(RecycleQueryParameters queryParameters)
+        {
+            return (queryParameters.Compostable ||
+                    !queryParameters.IncludeArchived);
+        }
+
+        private static string QueryToSql(RecycleQueryParameters queryParameters)
+        {
+            var additionSql = new StringBuilder(" WHERE ItemTypeId = 2");
 
             if (!queryParameters.IncludeArchived)
             {
-                foundQueryParam = true;
-                additionSql.Append($"Archived IS FALSE");
+                additionSql.Append($" AND Archived IS FALSE");
             }
 
-            if (queryParameters.CategoryTypeId.HasValue)
+            if (queryParameters.Compostable)
             {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
-
-                foundQueryParam = true;
-                additionSql.Append($"CategoryTypeId = {queryParameters.CategoryTypeId}");
+                additionSql.Append($" AND Compostable IS TRUE");
             }
 
-            if (queryParameters.ConditionTypeId.HasValue)
-            {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
+            additionSql.Append(" order by ID DESC");
 
-                foundQueryParam = true;
-                additionSql.Append($"ConditionTypeId = {queryParameters.ConditionTypeId}");
-            }
-
-            if (queryParameters.Delivery)
-            {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
-
-                foundQueryParam = true;
-                additionSql.Append($"Delivery IS TRUE");
-            }
-
-            if (queryParameters.Collection)
-            {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
-
-                foundQueryParam = true;
-                additionSql.Append($"Collection IS TRUE");
-            }
-
-            if (queryParameters.Postage)
-            {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
-
-                foundQueryParam = true;
-                additionSql.Append($"Postage IS TRUE");
-            }
-
-            if (queryParameters.Recover)
-            {
-                if (foundQueryParam)
-                {
-                    additionSql.Append(" AND ");
-                }
-
-                foundQueryParam = true;
-                additionSql.Append($"Recover IS TRUE");
-            }
-            
             return additionSql.ToString();
         }
 
-        private static bool HasQuery(QueryParameters queryParameters)
+        public async Task<IEnumerable<RepairItem?>> GetItems(RepairQueryParameters queryParameters)
         {
-            return (queryParameters.CategoryTypeId.HasValue ||
-                    queryParameters.ConditionTypeId.HasValue ||
-                    queryParameters.Delivery ||
-                    queryParameters.Collection ||
-                    queryParameters.Postage ||
-                    queryParameters.Recover || 
-                    !queryParameters.IncludeArchived);
+            var sqlStatement = GetAllItemsSqlStatement();
+            if (HasQuery(queryParameters))
+            {
+                var additionalSql = QueryToSql(queryParameters);
+                sqlStatement += additionalSql;
+            }
+
+            var items = await _query.QueryAsync<Item>(sqlStatement);
+
+            return items.Select(ConvertToRepair);
+        }
+
+        private static RepairItem? ConvertToRepair(Item? arg)
+        {
+            if (arg == null) return null;
+
+            return new RepairItem
+            {
+                Id = arg.Id,
+                CurrentUserId = arg.CurrentUserId,
+                Name = arg.Name,
+                Description = arg.Description,
+                PictureUrl = arg.PictureUrl,
+                Location = arg.Location,
+                Archived = arg.Archived,
+                ArchivedReason = arg.ArchivedReason
+            };
+        }
+
+        private static bool HasQuery(RepairQueryParameters queryParameters)
+        {
+            return (!queryParameters.IncludeArchived);
+        }
+
+        private static string QueryToSql(RepairQueryParameters queryParameters)
+        {
+            var additionSql = new StringBuilder(" WHERE ItemTypeId = 3");
+
+            if (!queryParameters.IncludeArchived)
+            {
+                additionSql.Append($" AND Archived IS FALSE");
+            }
+
+            additionSql.Append(" order by ID DESC");
+
+            return additionSql.ToString();
         }
 
         public async Task<Item?> GetItemByItemId(long itemId)
@@ -129,35 +228,34 @@ namespace r7.Repositories
             return item;
         }
 
-        public async Task<Item?> AddItem(NewReuseItemRequest item)
+        public async Task<ReuseItem?> AddItem(NewReuseItemRequest item)
         {
-            var sql = AddItemSqlStatement();
+            var sql = AddReuseItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, new
             {
                 item.Name,
+                item.UserId,
                 item.Description,
+                item.PictureUrl,
+                item.Location,
                 item.CategoryTypeId,
                 item.ConditionTypeId,
                 item.Delivery,
                 item.Collection,
                 item.Postage,
-                item.Recover,
-                item.Location,
-                item.PictureUrl,
-                item.UserId,
-                Archived = false,
-                ItemTypeId = 1
+                item.Recover
             });
 
-            return await GetItemByItemId(id);
+            return ConvertToReuse(await GetItemByItemId(id));
         }
 
-        public async Task<Item?> AddItem(NewRecycleItemRequest item)
+        public async Task<RecycleItem?> AddItem(NewRecycleItemRequest item)
         {
             var sql = AddRecycleItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, new
             {
                 item.Name,
+                item.UserId,
                 item.Description,
                 item.PictureUrl,
                 item.Location,
@@ -165,35 +263,25 @@ namespace r7.Repositories
                 item.Distance,
                 item.Weight,
                 item.Dimensions,
-                item.Compostable,
-                item.UserId,
-                Archived = false
+                item.Compostable
             });
 
-            return await GetItemByItemId(id);
+            return ConvertToRecycle(await GetItemByItemId(id));
         }
 
-        public async Task<Item?> AddItem(NewRepairItemRequest item)
+        public async Task<RepairItem?> AddItem(NewRepairItemRequest item)
         {
-            var sql = AddItemSqlStatement();
+            var sql = AddRepairItemSqlStatement();
             var id = await _query.ExecuteScalarAsync<long>(sql, new
             {
                 item.Name,
-                item.Description,
-                item.CategoryTypeId,
-                item.ConditionTypeId,
-                item.Delivery,
-                item.Collection,
-                item.Postage,
-                item.Recover,
-                item.Location,
-                item.PictureUrl,
                 item.UserId,
-                Archived = false,
-                ItemTypeId = 3
+                item.Description,
+                item.PictureUrl,
+                item.Location
             });
 
-            return await GetItemByItemId(id);
+            return ConvertToRepair(await GetItemByItemId(id));
         }
         
         public async Task EditItem(long itemId, EditItemRequest editItemRequest)
@@ -226,25 +314,47 @@ namespace r7.Repositories
 
         private static string GetAllItemsSqlStatement()
         {
-            return $@"SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ArchivedReason FROM items";
+            return "SELECT * FROM items";
         }
 
         private static string GetItemByIdSqlStatement()
         {
-            return $@"
-            SELECT Id, Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ArchivedReason FROM items
-            WHERE id = @ItemId";
+            return $@"SELECT * FROM items WHERE id = @ItemId";
         }
 
-        private static string AddItemSqlStatement()
+        private static string AddReuseItemSqlStatement()
         {
             return $@"INSERT INTO items
                  (
-                   Name, Description, CategoryTypeId, ConditionTypeId, Delivery, Collection, Postage, Recover, PictureUrl, Location, CurrentUserId, Archived, ItemTypeId
+                    Name,
+                    CurrentUserId,
+                    Description,
+                    PictureUrl,
+                    Location,
+                    CategoryTypeId,
+                    ConditionTypeId,
+                    Delivery,
+                    Collection,
+                    Postage,
+                    Recover,
+                    Archived,
+                    ItemTypeId
                  )
                  VALUES
                  (
-                   @Name, @Description, @CategoryTypeId, @ConditionTypeId, @Delivery, @Collection, @Postage, @Recover, @PictureUrl, @Location, @UserId, @Archived, @ItemTypeId
+                    @Name,
+                    @UserId,
+                    @Description,
+                    @PictureUrl,
+                    @Location,
+                    @CategoryTypeId,
+                    @ConditionTypeId,
+                    @Delivery,
+                    @Collection,
+                    @Postage,
+                    @Recover,
+                    False,
+                    1
                  ) RETURNING Id";
         }
 
@@ -253,36 +363,64 @@ namespace r7.Repositories
             return $@"INSERT INTO items
                  (
                     Name,
+                    CurrentUserId,
                     Description,
-                    CategoryTypeId,
-                    ConditionTypeId,
                     PictureUrl,
                     Location,
-                    CurrentUserId,
-                    Archived,
-                    ItemTypeId,
+                    CategoryTypeId,
+                    ConditionTypeId,
+                    Dimensions,
+                    Weight,
+                    Compostable,
                     RecycleLocation,
                     Distance,
-                    Weight,
-                    Dimensions,
-                    Compostable
+                    Archived,
+                    ItemTypeId
                  )
                  VALUES
                  (
                     @Name,
+                    @UserId,
                     @Description,
-                    1,
-                    1,
                     @PictureUrl,
                     @Location,
-                    @UserId,
-                    @Archived,
-                    2,
+                    1,
+                    1,
+                    @Dimensions,
+                    @Weight,
+                    @Compostable,
                     @RecycleLocation,
                     @Distance,
-                    @Weight,
-                    @Dimensions,
-                    @Compostable
+                    False,
+                    2
+                 ) RETURNING Id";
+        }
+
+        private static string AddRepairItemSqlStatement()
+        {
+            return $@"INSERT INTO items
+                 (
+                    Name,
+                    CurrentUserId,
+                    Description,
+                    PictureUrl,
+                    Location,
+                    CategoryTypeId,
+                    ConditionTypeId,
+                    Archived,
+                    ItemTypeId
+                 )
+                 VALUES
+                 (
+                    @Name,
+                    @UserId,
+                    @Description,
+                    @PictureUrl,
+                    @Location,
+                    1,
+                    1,
+                    False,
+                    3
                  ) RETURNING Id";
         }
 

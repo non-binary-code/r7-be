@@ -12,7 +12,17 @@ namespace r7.Services
             _itemRepository = itemRepository;
         }
 
-        public async Task<IEnumerable<Item>> GetItems(QueryParameters queryParameters)
+        public async Task<IEnumerable<ReuseItem>> GetItems(ReuseQueryParameters queryParameters)
+        {
+            return await _itemRepository.GetItems(queryParameters);
+        }
+
+        public async Task<IEnumerable<RecycleItem>> GetItems(RecycleQueryParameters queryParameters)
+        {
+            return await _itemRepository.GetItems(queryParameters);
+        }
+
+        public async Task<IEnumerable<RepairItem>> GetItems(RepairQueryParameters queryParameters)
         {
             return await _itemRepository.GetItems(queryParameters);
         }
@@ -22,17 +32,17 @@ namespace r7.Services
             return await _itemRepository.GetItemByItemId(itemId);
         }
 
-        public async Task<Item?> AddItem(NewReuseItemRequest item)
+        public async Task<ReuseItem?> AddItem(NewReuseItemRequest item)
         {
             return await _itemRepository.AddItem(item);
         }
 
-        public async Task<Item?> AddItem(NewRecycleItemRequest item)
+        public async Task<RecycleItem?> AddItem(NewRecycleItemRequest item)
         {
             return await _itemRepository.AddItem(item);
         }
 
-        public async Task<Item?> AddItem(NewRepairItemRequest item)
+        public async Task<RepairItem?> AddItem(NewRepairItemRequest item)
         {
             return await _itemRepository.AddItem(item);
         }

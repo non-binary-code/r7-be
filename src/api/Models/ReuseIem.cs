@@ -1,12 +1,11 @@
 ﻿namespace r7.Models;
 
-public class Item
+public class ReuseItem
 {
     // Common
     public long Id { get; set; }
-    public long ItemTypeId { get; set; }
     public long CurrentUserId { get; set; }
-    
+
     public string Name { get; set; }
     public string Description { get; set; }
     public string PictureUrl { get; set; }
@@ -22,11 +21,4 @@ public class Item
     public bool Collection { get; set; }
     public bool Postage { get; set; }
     public bool Recover { get; set; }
-    
-    // Recycle
-    public string Dimensions { get; set; }
-    public decimal Weight { get; set; }
-    public bool Compostable { get; set; }
-    public string RecycleLocation { get; set; }
-    public decimal Distance { get; set; }
 }

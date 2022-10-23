@@ -18,9 +18,10 @@ namespace r7
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Item>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ReuseItem>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetItems([FromQuery] QueryParameters queryParameters)
+        [Route("reuse")]
+        public async Task<ActionResult> GetItems([FromQuery] ReuseQueryParameters queryParameters)
         {
             try
             {
@@ -33,7 +34,43 @@ namespace r7
                 return BadRequest(e);
             }
         }
-        
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<RecycleItem>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Route("recycle")]
+        public async Task<ActionResult> GetItems([FromQuery] RecycleQueryParameters queryParameters)
+        {
+            try
+            {
+                var returnedItems = await _itemService.GetItems(queryParameters);
+                return Ok(returnedItems);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<RepairItem>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Route("repair")]
+        public async Task<ActionResult> GetItems([FromQuery] RepairQueryParameters queryParameters)
+        {
+            try
+            {
+                var returnedItems = await _itemService.GetItems(queryParameters);
+                return Ok(returnedItems);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(Item), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -147,7 +184,7 @@ namespace r7
         }
     }
 
-    public class QueryParameters
+    public class ReuseQueryParameters
     {
         public int? CategoryTypeId { get; set; }
         public int? ConditionTypeId { get; set; }
@@ -155,6 +192,17 @@ namespace r7
         public bool Collection { get; set; }
         public bool Postage { get; set; }
         public bool Recover { get; set; }
+        public bool IncludeArchived { get; set; }
+    }
+
+    public class RecycleQueryParameters
+    {
+        public bool Compostable { get; set; }
+        public bool IncludeArchived { get; set; }
+    }
+
+    public class RepairQueryParameters
+    {
         public bool IncludeArchived { get; set; }
     }
 }
